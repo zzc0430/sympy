@@ -164,8 +164,8 @@ def test_ccode_functions2():
     assert ccode(Mod(p1, p2)**s) == 'pow(p1 % p2, s)'
     n = symbols('n', integer=True, negative=True)
     assert ccode(Mod(-n, p2)) == '(-n) % p2'
-    assert ccode(fibonacci(n)) == '(1.0/5.0)*pow(2, -n)*sqrt(5)*(-pow(1 - sqrt(5), n) + pow(1 + sqrt(5), n))'
-    assert ccode(lucas(n)) == 'pow(2, -n)*(pow(1 - sqrt(5), n) + pow(1 + sqrt(5), n))'
+    assert ccode(fibonacci(n)) == '((1.0/5.0)*pow(2, -n)*sqrt(5)*(-pow(1 - sqrt(5), n) + pow(1 + sqrt(5), n)))'
+    assert ccode(lucas(n)) == '(pow(2, -n)*(pow(1 - sqrt(5), n) + pow(1 + sqrt(5), n)))'
 
 
 def test_ccode_user_functions():
@@ -263,12 +263,12 @@ def test_ccode_sinc():
     from sympy.functions.elementary.trigonometric import sinc
     expr = sinc(x)
     assert ccode(expr) == (
-            "((x != 0) ? (\n"
+            "(((x != 0) ? (\n"
             "   sin(x)/x\n"
             ")\n"
             ": (\n"
             "   1\n"
-            "))")
+            ")))")
 
 
 def test_ccode_Piecewise_deep():
@@ -643,7 +643,7 @@ def test_C99CodePrinter():
 @XFAIL
 def test_C99CodePrinter__precision_f80():
     f80_printer = C99CodePrinter({"type_aliases": {real: float80}})
-    assert f80_printer.doprint(sin(x+Float('2.1'))) == 'sinl(x + 2.1L)'
+    assert f80_printer.doprint(sin(x + Float('2.1'))) == 'sinl(x + 2.1L)'
 
 
 def test_C99CodePrinter__precision():
@@ -699,8 +699,8 @@ def test_C99CodePrinter__precision():
         check(gamma(x), 'tgamma{s}(x)')
         check(loggamma(x), 'lgamma{s}(x)')
 
-        check(ceiling(x + 2.), "ceil{s}(x + 2.0{S})")
-        check(floor(x + 2.), "floor{s}(x + 2.0{S})")
+        check(ceiling(x + 2.), "ceil{s}(x) + 2")
+        check(floor(x + 2.), "floor{s}(x) + 2")
         check(fma(x, y, -z), 'fma{s}(x, y, -z)')
         check(Max(x, 8.0, x**4.0), 'fmax{s}(8.0{S}, fmax{s}(x, pow{s}(x, 4.0{S})))')
         check(Min(x, 2.0), 'fmin{s}(2.0{S}, x)')

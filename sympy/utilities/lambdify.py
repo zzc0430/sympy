@@ -721,15 +721,11 @@ def lambdify(args, expr, modules=None, printer=None, use_imps=True,
 
     But if we try to pass in a SymPy expression, it fails
 
-    >>> try:
-    ...     g(x + 1)
-    ... # NumPy release after 1.17 raises TypeError instead of
-    ... # AttributeError
-    ... except (AttributeError, TypeError):
-    ...     raise AttributeError() # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> g(x + 1)
     Traceback (most recent call last):
     ...
-    AttributeError:
+    TypeError: loop of ufunc does not support argument 0 of type Add which has
+               no callable sin method
 
     Now, let's look at what happened. The reason this fails is that ``g``
     calls ``numpy.sin`` on the input expression, and ``numpy.sin`` does not
@@ -1160,9 +1156,9 @@ class _EvaluatorPrinter:
 
         for s, e in cses:
             if e is None:
-                funcbody.append('del {}'.format(s))
+                funcbody.append('del {}'.format(self._exprrepr(s)))
             else:
-                funcbody.append('{} = {}'.format(s, self._exprrepr(e)))
+                funcbody.append('{} = {}'.format(self._exprrepr(s), self._exprrepr(e)))
 
         str_expr = _recursive_to_string(self._exprrepr, expr)
 
